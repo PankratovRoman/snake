@@ -3,14 +3,17 @@ const ctx = canvas.getContext("2d");
 
 const cell = 32;
 let cellsInRow = 10;
-let gameAreaSize = cell*cellsInRow;
+let gameAreaSize = cell * cellsInRow;
 
 canvas.setAttribute("width", gameAreaSize);
-canvas.setAttribute("height", gameAreaSize);
+canvas.setAttribute("height", gameAreaSize + 100);
 
 function drawGameArea() {
     ctx.fillStyle = "yellow";
     ctx.fillRect(0,0, gameAreaSize, gameAreaSize)
+
+    ctx.fillStyle = "orange";
+    ctx.fillRect(0,gameAreaSize, gameAreaSize, 100)
 
     ctx.fillStyle = "black";
     for(let i = 0; i < cellsInRow/2; i++) {
@@ -24,12 +27,10 @@ function drawGameArea() {
     }
 }
 
-
 const foodImg = new Image();
 foodImg.src = "img/food.png";
 
 let score = 0;
-let timeScore = 200;
 
 let food = {
   x: Math.floor((Math.random() * cellsInRow)) * cell,
@@ -45,9 +46,7 @@ snake[0] = {
 };
 
 document.addEventListener("keydown", direction);
-
 let dir = "";
-
 function direction(event) {
     if(event.keyCode == 37 && dir != "right")
         dir = "left";
@@ -58,17 +57,17 @@ function direction(event) {
     else if(event.keyCode == 40 && dir != "up")
         dir = "down";
 }
-//
-// function isEatTale(snakeHead, snake) {
-//     for (let i = 0; i < snake.length; i++){
-//         if (snakeHead.x == snake[i].x && snakeHead.y == snake[i].y){
-//             console.log("pizdik")
-//             clearTimeout(gameStart);
-//         }
-//     }
-// }
-//
-let counter = 200;
+
+function isEatTale(snakeHead, snake) {
+    for (let i = 0; i < snake.length; i++){
+        if (snakeHead.x == snake[i].x && snakeHead.y == snake[i].y){
+            {console.log("pizdik")
+           return;}
+        }
+    }
+}
+
+let timeScore = 200;
 
 function gameStart(){
     drawGameArea();
@@ -79,28 +78,28 @@ function gameStart(){
         ctx.fillRect(snake[i].x, snake[i].y, cell, cell);
     }
 
-    // ctx.fillStyle = "white";
-    // ctx.font = "50px Arial";
-    // ctx.fillText( score, cell * 2.5, cell * 1.7 );
-
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
     if(snakeX == food.x && snakeY == food.y) {
         score++;
-        //counter-=50;
-        //timeScore-=100;
-        food = {
+        timeScore-=10;
+       food = {
             x: Math.floor((Math.random() * cellsInRow)) * cell,
             y: Math.floor((Math.random() * cellsInRow)) * cell
         };
     } else
         snake.pop();
 
-    if (snakeX < cell || snakeX > cell * 17 ||
-        snakeY < 3 * cell || snakeY > cell * 17)
+    ctx.fillStyle = "black";
+    ctx.font = "50px Georgia";
+    ctx.fillText( score, cell, gameAreaSize + 50 );
+
+    if (snakeX < cell || snakeX >= cell * cellsInRow ||
+        snakeY < cell || snakeY >= cell * cellsInRow) {
         console.log("chirik")
-        //clearTimeout(gameStart);
+        return;
+    }
 
     if(dir == "left") snakeX -= cell;
     if(dir == "right") snakeX += cell;
@@ -112,16 +111,12 @@ function gameStart(){
         y: snakeY
     };
 
-    //isEatTale(newHead, snake);
+    isEatTale(newHead, snake);
 
     snake.unshift(newHead);
 
-    setTimeout(gameStart, counter);
-
+    setTimeout(gameStart, timeScore);
 
     }
 
 gameStart();
-//
-//
-// //let game = setInterval(drawGame, timeScore);
