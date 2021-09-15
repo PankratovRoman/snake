@@ -8,9 +8,8 @@ const foodImg = new Image();
 foodImg.src = "img/food.png";
 
 let box = 32;
-
 let score = 0;
-let timeScore = 300;
+let timeScore = 200;
 
 let food = {
   x: Math.floor(Math.random() * 17 + 1) * box,
@@ -38,22 +37,27 @@ function direction(event) {
         dir = "down";
 }
 
-function eatTale(head, arr) {
-    for (let i = 0; i < arr.length; i++){
-        if (head.x == arr[i].x && head.y == arr[i].y){
-            clearInterval(game);
+function isEatTale(snakeHead, snake) {
+    for (let i = 0; i < snake.length; i++){
+        if (snakeHead.x == snake[i].x && snakeHead.y == snake[i].y){
+            console.log("pizdik")
+            clearTimeout(gameStart);
         }
     }
 }
 
-function drawGame() {
+let counter = 200;
 
-  ctx.drawImage(ground, 0, 0);
-  ctx.drawImage(foodImg, food.x, food.y);
+
+function gameStart(){
+
+    ctx.drawImage(ground, 0, 0);
+    ctx.drawImage(foodImg, food.x, food.y);
 
     for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i == 0 ? "green" : "red";
-    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        ctx.fillStyle = i == 0 ? "green" : "red";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+
     }
 
     ctx.fillStyle = "white";
@@ -65,7 +69,8 @@ function drawGame() {
 
     if(snakeX == food.x && snakeY == food.y) {
         score++;
-        timeScore-=100;
+        //counter-=50;
+        //timeScore-=100;
         food = {
             x: Math.floor((Math.random() * 17 + 1)) * box,
             y: Math.floor((Math.random() * 15 + 3)) * box,
@@ -75,7 +80,8 @@ function drawGame() {
 
     if (snakeX < box || snakeX > box * 17 ||
         snakeY < 3 * box || snakeY > box * 17)
-        clearInterval(game);
+        console.log("chirik")
+        //clearTimeout(gameStart);
 
     if(dir == "left") snakeX -= box;
     if(dir == "right") snakeX += box;
@@ -86,12 +92,17 @@ function drawGame() {
         x: snakeX,
         y: snakeY
     };
-
-    eatTale(newHead, snake);
+    console.log(newHead);
+    isEatTale(newHead, snake);
 
     snake.unshift(newHead);
 
-}
+    setTimeout(gameStart, counter);
+    
+
+    }
+
+let game = gameStart();
 
 
-let game = setInterval(drawGame, timeScore);
+//let game = setInterval(drawGame, timeScore);
