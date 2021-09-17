@@ -136,11 +136,15 @@ function drawFoodAndSnake() {
         ctx.fillRect(snake[i].x, snake[i].y, cell, cell);
     }
 
-    if (snake[0].x == gameAreaSize/2 && score==0) {
+    if (snake[0].x == gameAreaSize/2 && snake[0].y == gameAreaSize/2 && score==0) {
         ctx.fillStyle = "black";
-    } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
+    } else if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
+        ctx.fillStyle = "#228B22";
+    } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
         ctx.fillStyle = "#006400";
-    } else {
+    } else if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
+        ctx.fillStyle = "#006400";
+    } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
         ctx.fillStyle = "#228B22";
     }
     ctx.fillRect(previousLastSnakeElemCoords.x, previousLastSnakeElemCoords.y, cell, cell)
