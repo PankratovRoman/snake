@@ -92,23 +92,44 @@ function direction(event) {
             vectorX = -cell;
             vectorY = 0;
             ignoreTurn = true;
-        } else if(event.keyCode == 38 && vectorY == 0) {
+        } else if (event.keyCode == 38 && vectorY == 0) {
             //up
             vectorX = 0;
             vectorY = -cell;
             ignoreTurn = true;
-        } else if(event.keyCode == 39 && vectorX == 0) {
+        } else if (event.keyCode == 39 && vectorX == 0) {
             //right
             vectorX = cell;
             vectorY = 0;
             ignoreTurn = true;
-        } else if(event.keyCode == 40 && vectorY == 0) {
+        } else if (event.keyCode == 40 && vectorY == 0) {
+            //down
+            vectorX = 0;
+            vectorY = cell;
+            ignoreTurn = true;
+        } else if (event.keyCode == 65 && vectorX == 0) {
+            //left
+            vectorX = -cell;
+            vectorY = 0;
+            ignoreTurn = true;
+        } else if (event.keyCode == 87 && vectorY == 0) {
+            //up
+            vectorX = 0;
+            vectorY = -cell;
+            ignoreTurn = true;
+        } else if (event.keyCode == 68 && vectorX == 0) {
+            //right
+            vectorX = cell;
+            vectorY = 0;
+            ignoreTurn = true;
+        } else if (event.keyCode == 83 && vectorY == 0) {
             //down
             vectorX = 0;
             vectorY = cell;
             ignoreTurn = true;
         }
     }
+
     if (event.keyCode == 32) {
         //restart
         reset();
