@@ -6,6 +6,8 @@ let cellsInRow = 10;
 let gameAreaSize = cell * cellsInRow;
 let vectorX = 0;
 let vectorY = 0;
+let vectorXDelta = 0;
+let vectorYDelta = 0;
 let previousLastSnakeElemCoords = {
     x: 0,
     y: 0
@@ -54,10 +56,6 @@ let food = {
   y: Math.floor((Math.random() * cellsInRow)) * cell
 };
 
-console.log(food.x + "  " + food.y + "       " +food.x/cellsInRow/cell + "       "+food.y/cellsInRow/cell)
-
-
-
 function reset () {
     isDead = false;
     ignoreTurn = false;
@@ -68,6 +66,8 @@ function reset () {
     };
     vectorX = 0;
     vectorY = 0;
+    vectorXDelta = 0;
+    vectorYDelta = 0;
     food = {
         x: Math.floor((Math.random() * cellsInRow)) * cell,
         y: Math.floor((Math.random() * cellsInRow)) * cell
@@ -75,8 +75,8 @@ function reset () {
     score = 0;
     timeScore = defaultTimeScore;
     previousLastSnakeElemCoords = {
-        x: snake[0].x,
-        y: snake[0].y
+        x: -1,
+        y: -1
     };
     drawGameArea();
 }
@@ -85,49 +85,27 @@ document.addEventListener("keydown", direction);
 let ignoreTurn = false;
 
 function direction(event) {
-    //защита от быстрого нажатия
-    if(!ignoreTurn) {
-        if (event.keyCode == 37 && vectorX == 0) {
+
+        if ([37, 65].includes(event.keyCode) && vectorX == 0) {
             //left
-            vectorX = -cell;
-            vectorY = 0;
+            vectorXDelta = -cell;
+            vectorYDelta = 0;
             ignoreTurn = true;
-        } else if (event.keyCode == 38 && vectorY == 0) {
+        } else if ([38, 87].includes(event.keyCode)&& vectorY == 0) {
             //up
-            vectorX = 0;
-            vectorY = -cell;
+            vectorXDelta = 0;
+            vectorYDelta = -cell;
             ignoreTurn = true;
-        } else if (event.keyCode == 39 && vectorX == 0) {
+        } else if ([39, 68].includes(event.keyCode) && vectorX == 0) {
             //right
-            vectorX = cell;
-            vectorY = 0;
+            vectorXDelta = cell;
+            vectorYDelta = 0;
             ignoreTurn = true;
-        } else if (event.keyCode == 40 && vectorY == 0) {
+        } else if ([40, 83].includes(event.keyCode) && vectorY == 0) {
             //down
-            vectorX = 0;
-            vectorY = cell;
+            vectorXDelta = 0;
+            vectorYDelta = cell;
             ignoreTurn = true;
-        } else if (event.keyCode == 65 && vectorX == 0) {
-            //left
-            vectorX = -cell;
-            vectorY = 0;
-            ignoreTurn = true;
-        } else if (event.keyCode == 87 && vectorY == 0) {
-            //up
-            vectorX = 0;
-            vectorY = -cell;
-            ignoreTurn = true;
-        } else if (event.keyCode == 68 && vectorX == 0) {
-            //right
-            vectorX = cell;
-            vectorY = 0;
-            ignoreTurn = true;
-        } else if (event.keyCode == 83 && vectorY == 0) {
-            //down
-            vectorX = 0;
-            vectorY = cell;
-            ignoreTurn = true;
-        }
     }
 
     if (event.keyCode == 32) {
@@ -153,42 +131,56 @@ function drawFoodAndSnake() {
     ctx.drawImage(foodImg, food.x, food.y, cell, cell);
 
     for (let i = snake.length - 1; i >= 0; i--) {
-        ctx.fillStyle = i == 0 ? "black" : "grey";
+        ctx.fillStyle = i == 0 ? "black" : "#2b2b2b";
         ctx.fillRect(snake[i].x, snake[i].y, cell, cell);
     }
 
-    if (snake[0].x == gameAreaSize/2 && snake[0].y == gameAreaSize/2 && score==0) {
-        ctx.fillStyle = "black";
-    } else if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
-        ctx.fillStyle = "#228B22";
-    } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
-        ctx.fillStyle = "#006400";
-    } else if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
-        ctx.fillStyle = "#006400";
-    } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
-        ctx.fillStyle = "#228B22";
+    if (previousLastSnakeElemCoords.x != null && previousLastSnakeElemCoords.y != null) {
+        if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
+            ctx.fillStyle = "#228B22";
+        } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 != 0) {
+            ctx.fillStyle = "#006400";
+        } else if ((previousLastSnakeElemCoords.x / cell) % 2 == 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
+            ctx.fillStyle = "#006400";
+        } else if ((previousLastSnakeElemCoords.x / cell) % 2 != 0 && (previousLastSnakeElemCoords.y / cell) % 2 == 0) {
+            ctx.fillStyle = "#228B22";
+        }
+        ctx.fillRect(previousLastSnakeElemCoords.x, previousLastSnakeElemCoords.y, cell, cell)
     }
-    ctx.fillRect(previousLastSnakeElemCoords.x, previousLastSnakeElemCoords.y, cell, cell)
     setTimeout(drawFoodAndSnake, 10);
 }
 
 function gameStart() {
     if(!isDead) {
+        if (vectorXDelta != 0 || vectorYDelta != 0){
+            vectorX = vectorXDelta;
+            vectorY = vectorYDelta;
+            vectorXDelta = 0;
+            vectorYDelta = 0;
+        }
+
+        if (vectorX == 0 && vectorY == 0){
+            setTimeout(gameStart, timeScore);
+            return;
+        }
+
         let snakeX = snake[0].x;
         let snakeY = snake[0].y;
-        previousLastSnakeElemCoords.x = snake[snake.length - 1].x;
-        previousLastSnakeElemCoords.y = snake[snake.length - 1].y;
 
-        if (snakeX < 0 || snakeX >= cell * cellsInRow ||
-            snakeY < 0 || snakeY >= cell * cellsInRow) {
+
+        if (snakeX + vectorX < 0 || snakeX + vectorX >= cell * cellsInRow ||
+            snakeY + vectorY < 0 || snakeY + vectorY >= cell * cellsInRow) {
             vectorX = 0;
             vectorY = 0;
             isDead = true;
+        } else {
+            previousLastSnakeElemCoords.x = snake[snake.length - 1].x;
+            previousLastSnakeElemCoords.y = snake[snake.length - 1].y;
         }
 
         snakeX += vectorX;
         snakeY += vectorY;
-        ignoreTurn = false;
+
 
         if (snakeX == food.x && snakeY == food.y) {
             score++;
